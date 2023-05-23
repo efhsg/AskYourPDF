@@ -1,0 +1,13 @@
+{
+    "python.formatting.provider": "none",        
+    "[python]": {
+        "diffEditor.ignoreTrimWhitespace": false,
+        "editor.formatOnType": true,
+        "editor.wordBasedSuggestions": false,
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": true,
+        },
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    }
+}
