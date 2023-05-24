@@ -12,15 +12,10 @@ from langchain.chat_models import ChatOpenAI
 from openai import InvalidRequestError
 from langchain.callbacks import get_openai_callback
 
-# Load the environment variables
-load_dotenv()
-
-
 def main():
     model_name = os.getenv("MODEL_NAME", "gpt-3.5-turbo")
     st.set_page_config(page_title="Ask you PDF")
     st.header("Ask your pdf :speech_balloon:")
-    st.write("Using " + model_name)
 
     pdf = st.file_uploader("Upload your pdf", type="pdf")
     if pdf is not None:
@@ -44,11 +39,14 @@ def main():
             except InvalidRequestError as e:
                 if "maximum context length" in str(e):
                     print("============== MAX =======================")
+                    print(e)
+                    print("==========================================")
                     response = run_chain(2, 500, model_name, docs, user_question)
                 else:
                     raise e
 
             st.write(response)
+            st.balloons()
 
 
 def run_chain(k, max_tokens, model_name, docs, user_question):
@@ -59,29 +57,21 @@ def run_chain(k, max_tokens, model_name, docs, user_question):
         print(cb)
         rounded_cost = extract_and_round_cost(cb)
         st.write("Using " + model_name + ", " + f"${rounded_cost}")
+        st.write("---")        
     return response
 
 
 def extract_and_round_cost(cb):
-    # Convert the callback object to a string
     cb_str = str(cb)
-
-    # Use regex to find the line with the cost
     cost_line = re.search(r"Total Cost \(USD\): \$(.+)", cb_str)
 
     if cost_line:
-        cost_str = cost_line.group(1)  # Get the matched group
+        cost_str = cost_line.group(1)
         cost = decimal.Decimal(cost_str)
-
-        # Set the context for rounding
         decimal.getcontext().rounding = decimal.ROUND_HALF_UP
-
-        # Round the cost to 3 decimal places
         rounded_cost = round(cost, 3)
-
-        # Return the rounded cost
         return float(rounded_cost)
 
-
+load_dotenv()
 if __name__ == "__main__":
     main()
