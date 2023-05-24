@@ -21,6 +21,7 @@ def main():
     if pdf is not None:
         pdf_reader = PdfReader(pdf)
         text = ""
+        st.write("Parsing " + str(len(pdf_reader.pages)) + " pages")
         for page in pdf_reader.pages:
             text += page.extract_text()
         text_splitter = CharacterTextSplitter(
@@ -32,10 +33,11 @@ def main():
         knowledge_base = FAISS.from_texts(chunks, embeddings)
         user_question = st.text_input("Ask a question about your PDF:")
         if user_question:
+            user_question = "From the context." + user_question
             print(user_question)
             docs = knowledge_base.similarity_search(user_question, 3)
             try:
-                response = run_chain(4, 1000, model_name, docs, user_question)
+                response = run_chain(5, 1000, model_name, docs, user_question)
             except InvalidRequestError as e:
                 if "maximum context length" in str(e):
                     print("============== MAX =======================")
