@@ -12,6 +12,7 @@ from langchain.chat_models import ChatOpenAI
 from openai import InvalidRequestError
 from langchain.callbacks import get_openai_callback
 
+
 def main():
     model_name = os.getenv("MODEL_NAME", "gpt-3.5-turbo")
     st.set_page_config(page_title="Ask you PDF")
@@ -33,7 +34,6 @@ def main():
         knowledge_base = FAISS.from_texts(chunks, embeddings)
         user_question = st.text_input("Ask a question about your PDF:")
         if user_question:
-            user_question = "From the context." + user_question
             print(user_question)
             docs = knowledge_base.similarity_search(user_question, 3)
             try:
@@ -59,7 +59,7 @@ def run_chain(k, max_tokens, model_name, docs, user_question):
         print(cb)
         rounded_cost = extract_and_round_cost(cb)
         st.write("Using " + model_name + ", " + f"${rounded_cost}")
-        st.write("---")        
+        st.write("---")
     return response
 
 
@@ -73,6 +73,7 @@ def extract_and_round_cost(cb):
         decimal.getcontext().rounding = decimal.ROUND_HALF_UP
         rounded_cost = round(cost, 3)
         return float(rounded_cost)
+
 
 load_dotenv()
 if __name__ == "__main__":
